@@ -1,0 +1,28 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[info] %logger - %message%n%xException</pattern>
+        </encoder>
+    </appender>
+
+    <timestamp key="byDay" datePattern="dd-MM-yyyy"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application-${byDay}.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%date %-5level [%thread] %logger{128} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <logger name="slick.jdbc" level="DEBUG"/>
+    <logger name="akka.http" level="INFO"/>
+    <logger name="com.levi9" level="INFO"/>
+
+</configuration>
