@@ -1,37 +1,26 @@
 package dev.nigredo.domain.models
 
-import dev.nigredo.domain.models.User.State
-import dev.nigredo.domain.models.User.State.{Existing, New, Updated}
+import dev.nigredo.domain.models
 
-case class User[S <: State, A <: Id.State] private(id: Id[String, A], name: String, email: Email, password: Password)
-  extends Persistent
+case class User private(id: Id[String], name: Name, email: Email, password: Password)
+  extends Persistent[String] with User.Existing
 
 object User {
 
-  type NewUser = User[New, Id.New]
-  type UpdatedUser = User[Updated, Id.Existing]
-  type ExistingUser = User[Existing, Id.Existing]
-  type NewUserId = Id[String, Id.New]
-  type ExistingUserId = Id[String, Id.Existing]
+  type NewUser = User with New
+  type UpdatedUser = User with Updated
+  type ExistingUser = User with Existing
+  type UserId = Id[String]
 
-  def apply(name: String, email: Email, password: Password) = new User[New, Id.New](Uuid(), name, email, password)
+  def apply(name: Name, email: Email, password: Password) = new User(Uuid(), name, email, password) with New
 
-  def apply(id: ExistingUserId, name: String, email: Email, password: Password) = new User[Existing, Id.Existing](id, name, email, password)
+  sealed trait Existing extends models.Existing[User, (Option[Name], Option[Email], Option[Password])] {
+    this: User =>
 
-  sealed trait State
-
-  object State {
-
-    sealed trait New extends State
-
-    sealed trait Existing extends State
-
-    sealed trait Updated extends Existing
-
-  }
-
-  implicit class Update(existing: ExistingUser) {
-    def update(name: String, email: Email, password: Password): User[Updated, Id.Existing] = new User[Updated, Id.Existing](existing.id, name, email, password)
+    override def update(updateWith: (Option[Name], Option[Email], Option[Password])) = {
+      val (name, email, password) = updateWith
+      new User(this.id, name.getOrElse(this.name), email.getOrElse(this.email), password.getOrElse(this.password)) with Updated
+    }
   }
 
 }
@@ -39,3 +28,5 @@ object User {
 case class Email(value: String) extends AnyVal
 
 case class Password(value: String) extends AnyVal
+
+case class Name(value: String) extends AnyVal

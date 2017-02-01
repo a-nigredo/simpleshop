@@ -12,8 +12,8 @@ package object service {
   def createResponse[A, B <: ApplicationProtocol](response: Result[Future[A]], onSuccess: A => B) =
     response match {
       case Left(err) => err.map {
-        case err: ValidationError => InvalidData(err)
-        case err: InternalError => ApplicationProtocol.InternalError(err)
+        case err@ValidationError(_) => InvalidData(err)
+        case err@InternalError(_) => ApplicationProtocol.InternalError(err)
         case _: ItemNotFound => ApplicationProtocol.ItemNotFound
         case _ => ApplicationProtocol.InternalError(InternalError("Something goes wrong"))
       }

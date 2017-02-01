@@ -1,14 +1,15 @@
-package dev.nigredo.service
+package dev.nigredo.service.user
 
 import akka.actor.{Actor, Props}
 import akka.pattern.pipe
 import dev.nigredo.domain.models.User.{NewUser, UpdatedUser}
 import dev.nigredo.protocol.UserProtocol.Command._
-import dev.nigredo.service.UserService.{Create, Update}
+import dev.nigredo.service.createResponse
+import dev.nigredo.service.user.UserService.{Create, Update}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class UserServiceActor(onCreate: Create, onUpdate: Update) extends Actor {
+private[service] class UserServiceActor(onCreate: Create, onUpdate: Update) extends Actor {
 
   override def receive: Receive = {
     case CreateUser(dto) => createResponse(onCreate(dto), (x: NewUser) => Created(x.id)).pipeTo(sender)
@@ -16,6 +17,6 @@ class UserServiceActor(onCreate: Create, onUpdate: Update) extends Actor {
   }
 }
 
-object UserServiceActor {
+private[service] object UserServiceActor {
   def props(onCreate: Create, onUpdate: Update) = Props(new UserServiceActor(onCreate, onUpdate))
 }

@@ -17,6 +17,8 @@ package object controller {
     def Unauthorized = complete(HttpResponse(StatusCodes.Unauthorized))
 
     def Forbidden = complete(HttpResponse(StatusCodes.Forbidden))
+
+    def BadRequest(content: String) = complete(HttpResponse(status = StatusCodes.BadRequest, entity = HttpEntity(ContentTypes.`application/json`, content)))
   }
 
 }

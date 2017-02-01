@@ -1,7 +1,7 @@
 package dev.nigredo.protocol
 
 import dev.nigredo.dao.query.Pagination
-import dev.nigredo.domain.models.User.{ExistingUserId, NewUserId}
+import dev.nigredo.domain.models.User.UserId
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
 import dev.nigredo.projection.User
 import dev.nigredo.protocol.ApplicationProtocol.ApplicationProtocol
@@ -26,11 +26,11 @@ object UserProtocol {
 
     case class CreateUser(data: CreateUserDto) extends UserProtocol
 
-    case class UpdateUser(id: ExistingUserId, data: UpdateUserDto) extends UserProtocol
+    case class UpdateUser(id: UserId, data: UpdateUserDto) extends UserProtocol
 
-    case class Created(id: NewUserId) extends UserProtocol
+    case class Created(id: UserId) extends UserProtocol
 
-    case class Updated(id: ExistingUserId) extends UserProtocol
+    case class Updated(id: UserId) extends UserProtocol
 
   }
 

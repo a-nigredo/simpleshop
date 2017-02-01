@@ -1,0 +1,16 @@
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.classpath
+**/.idea/
+**/.project
+**/.settings
+**/target/
+**/build/
+**/node/
+**/node_modules/
+**/npm-debug.log
+**/.DS_Store
+tmp
+logs
+rs.jar

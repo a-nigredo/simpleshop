@@ -1,8 +1,9 @@
 package dev.nigredo.dao
 
-import dev.nigredo.domain.models.{Id, Persistent}
+import dev.nigredo.domain.models.{New, Persistent, Updated}
 
 package object command {
-  type Create[A <: Persistent] = A => A
-  type Update[A <: Persistent, B <: Id[String, Id.Existing]] = B => A => A
+
+  type Create[A <: Persistent[String] with New] = A => A
+  type Update[A <: Persistent[String] with Updated] = A => A
 }

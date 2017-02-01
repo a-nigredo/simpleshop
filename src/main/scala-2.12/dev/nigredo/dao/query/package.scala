@@ -1,12 +1,12 @@
 package dev.nigredo.dao
 
-import dev.nigredo.domain.models.User.ExistingUserId
+import dev.nigredo.domain.models.Id
 
 import scala.concurrent.Future
 
 package object query {
 
-  type Item[A] = ExistingUserId => Future[Option[A]]
+  type Item[A] = Id[String] => Future[Option[A]]
   type Items[A] = Pagination => Future[List[A]]
 
   case class Pagination(startPage: Int, perPage: Int)
