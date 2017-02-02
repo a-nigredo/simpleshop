@@ -14,7 +14,7 @@ object UserProtocol {
 
     case class UserListRequest(pagination: Pagination) extends UserProtocol
 
-    case class UserListResponse(data: List[User]) extends UserProtocol
+    case class UserListResponse(data: Vector[User]) extends UserProtocol
 
     case class UserDetailsRequest(id: String) extends UserProtocol
 

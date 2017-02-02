@@ -1,5 +1,7 @@
 package dev.nigredo.service
 
+import java.util.Date
+
 import dev.nigredo.Error.{ItemNotFound, ValidationError}
 import dev.nigredo.domain.models._
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
@@ -16,12 +18,12 @@ class UserServiceTest extends FunSuite with ScalaFutures with Matchers {
   import dev.nigredo.service.user.UserService._
 
   val createdUser = User(Name("name"), Email("email"), Password("password"))
-  val existingUser = User(Uuid("test"), Name("name"), Email("email"), Password("password"))
-  val updatedUser = existingUser.update((None, Some(Email("email")), None))
+  val existingUser = User(Uuid("test"), Name("name"), Email("email"), Password("password"), Enable, new Date(), None)
+  val updatedUser = existingUser.update((None, Some(Email("email")), None, None))
   val successOnCreate = Future.successful(createdUser)
   val successOnUpdate = Future.successful(updatedUser)
   val newUserDto = CreateUserDto("name", "email", "password")
-  val updateUserDto = UpdateUserDto(Some("name"), Some("email"), Some("password"))
+  val updateUserDto = UpdateUserDto(Some("name"), Some("email"), Some("password"), None)
   val error = Left(Future.successful(ValidationError(Nil)))
 
   test("create new user with invalid data") {

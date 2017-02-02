@@ -1,6 +1,7 @@
 package dev.nigredo.dao
 
-import dev.nigredo.dao.query.user.DaoActor
+import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser}
+import dev.nigredo.projection.User
 import dev.nigredo.{system, _}
 import reactivemongo.api.{MongoConnection, MongoDriver}
 
@@ -11,21 +12,23 @@ object Dao {
 
   object Mongo {
 
-    import dev.nigredo.dao.command.user.Mongo._
-    import dev.nigredo.dao.query.user.Mongo._
+    import dev.nigredo.dao.command.mongo.UserDao.{DomainUserReader, _}
+    import dev.nigredo.dao.command.mongo._
+    import dev.nigredo.dao.query.mongo.UserDao.ProjectionUserReader
+    import dev.nigredo.dao.query.mongo._
 
     private lazy val driver = MongoDriver()
     private lazy val parsedUri = MongoConnection.parseURI(dataSourceConfig.getString("mongo.url"))
     private lazy val connection = Future.fromTry(parsedUri.map(driver.connection)).flatMap(_.database(dataSourceConfig.getString("mongo.db")))
     private lazy val userCollection = connection.map(_.collection("user"))
 
-    def queryUserDao = system.actorOf(DaoActor.props(list(userCollection), details(userCollection)))
+    def queryUserDao = system.actorOf(DaoActor.props(list[User](userCollection), details[User](userCollection)))
 
-    def createUser = create(userCollection) _
+    def createUser = create[NewUser](userCollection)(toNewDocument) _
 
-    def updateUser = update(userCollection) _
+    def updateUser = update[UpdatedUser](userCollection)(toUpdatedDocument) _
 
-    def findUserById = findById(userCollection) _
+    def findUserById = findById[ExistingUser](userCollection) _
   }
 
 }

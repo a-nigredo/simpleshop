@@ -7,7 +7,7 @@ import scala.concurrent.Future
 package object query {
 
   type Item[A] = Id[String] => Future[Option[A]]
-  type Items[A] = Pagination => Future[List[A]]
+  type Items[A] = Pagination => Future[Vector[A]]
 
   case class Pagination(startPage: Int, perPage: Int)
 

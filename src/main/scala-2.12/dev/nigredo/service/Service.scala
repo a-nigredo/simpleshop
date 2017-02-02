@@ -13,7 +13,7 @@ object Service {
 
   private val onCreate = UserService.create(dto => User(Name(dto.name), Email(dto.email), Password(dto.password)))(UserValidator.validate)(createUser)
   private val onUpdate = UserService.update(findUserById)((x: ExistingUser) => (dto: UpdateUserDto) =>
-    x.update((dto.name.map(Name), dto.email.map(Email), dto.password.map(Password))))(UserValidator.validate)(updateUser)
+    x.update((dto.name.map(Name), dto.email.map(Email), dto.password.map(Password), dto.active.map(x => Activation(x)))))(UserValidator.validate)(updateUser)
 
   def userService = system.actorOf(UserServiceActor.props(onCreate, onUpdate))
 }
