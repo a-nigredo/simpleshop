@@ -19,8 +19,7 @@ val reactiveMongoVersion = "0.12.1"
 val scalaTestVersion = "3.0.1"
 val akkaHttpJson = "1.12.0"
 val logbackVersion = "1.0.0"
-
-resolvers += "dl-john-ky" at "http://dl.john-ky.io/maven/releases"
+val bcryptVersion = "3.0"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -36,5 +35,6 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % scalaTestVersion,
   "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
   "de.heikoseeberger" %% "akka-http-json4s" % akkaHttpJson,
-  "ch.qos.logback" % "logback-classic" % logbackVersion % "runtime"
+  "ch.qos.logback" % "logback-classic" % logbackVersion % "runtime",
+  "com.github.t3hnar" %% "scala-bcrypt" % bcryptVersion
 )
