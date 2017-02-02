@@ -14,7 +14,7 @@ package object service {
       case Left(err) => err.map {
         case err@ValidationError(_) => InvalidData(err)
         case err@InternalError(_) => ApplicationProtocol.InternalError(err)
-        case _: ItemNotFound => ApplicationProtocol.ItemNotFound
+        case ItemNotFound() => ApplicationProtocol.ItemNotFound
         case _ => ApplicationProtocol.InternalError(InternalError("Something goes wrong"))
       }
       case Right(user) => user.map(onSuccess)

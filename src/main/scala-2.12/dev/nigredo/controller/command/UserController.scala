@@ -8,7 +8,7 @@ import de.heikoseeberger.akkahttpjson4s.Json4sSupport._
 import dev.nigredo.controller.Json
 import dev.nigredo.domain.models.Uuid
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
-import dev.nigredo.protocol.ApplicationProtocol.InvalidData
+import dev.nigredo.protocol.ApplicationProtocol.{InvalidData, ItemNotFound}
 import dev.nigredo.protocol.UserProtocol.Command.{CreateUser, Created, UpdateUser, Updated}
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization
@@ -31,6 +31,7 @@ object UserController {
       onSuccess(actor ? UpdateUser(Uuid(id), user)) {
         case Updated(data) => Json.Ok(write(Id(data.value)))
         case InvalidData(errs) => Json.BadRequest(write(errs.msgs))
+        case ItemNotFound => Json.NotFound
       }
     }
 }

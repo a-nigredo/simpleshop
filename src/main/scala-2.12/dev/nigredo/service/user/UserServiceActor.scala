@@ -13,7 +13,7 @@ private[service] class UserServiceActor(onCreate: Create, onUpdate: Update) exte
 
   override def receive: Receive = {
     case CreateUser(dto) => createResponse(onCreate(dto), (x: NewUser) => Created(x.id)).pipeTo(sender)
-    case UpdateUser(id, dto) => onUpdate(id)(dto).map(x => createResponse(x, (x: UpdatedUser) => Updated(x.id))).pipeTo(sender)
+    case UpdateUser(id, dto) => onUpdate(id)(dto).map(x => createResponse(x, (x: UpdatedUser) => Updated(x.id))).flatten.pipeTo(sender)
   }
 }
 

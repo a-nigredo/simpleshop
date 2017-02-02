@@ -11,10 +11,11 @@ import scala.concurrent.Future
 private[dao] object Mongo {
 
   implicit object UserReader extends BSONDocumentReader[ExistingUser] {
-    override def read(doc: BSONDocument): ExistingUser = User(doc.getAs[BSONString]("id").map(x => Uuid(x.value)).get,
-      doc.getAs[BSONString]("name").map(x => Name(x.value)).get,
-      doc.getAs[BSONString]("email").map(x => Email(x.value)).get,
-      doc.getAs[BSONString]("password").map(x => Password(x.value)).get)
+    override def read(doc: BSONDocument): ExistingUser =
+      User(doc.getAs[BSONString]("id").map(x => Uuid(x.value)).get,
+        doc.getAs[BSONString]("name").map(x => Name(x.value)).get,
+        doc.getAs[BSONString]("email").map(x => Email(x.value)).get,
+        doc.getAs[BSONString]("password").map(x => Password(x.value)).get)
   }
 
   def create(collection: Future[BSONCollection])(user: NewUser) = collection.flatMap { result =>
