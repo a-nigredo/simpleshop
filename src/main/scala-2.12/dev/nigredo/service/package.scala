@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 package object service {
 
-  def createResponse[A, B <: ApplicationProtocol](response: Result[Future[A]], onSuccess: A => B) =
+  private[service] def createResponse[A, B <: ApplicationProtocol](response: Result[Future[A]], onSuccess: A => B) =
     response match {
       case Left(err) => err.map {
         case err@ValidationError(_) => InvalidData(err)
