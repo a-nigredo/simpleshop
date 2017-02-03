@@ -20,6 +20,7 @@ val scalaTestVersion = "3.0.1"
 val akkaHttpJson = "1.12.0"
 val logbackVersion = "1.0.0"
 val bcryptVersion = "3.0"
+val scalazVersion = "7.2.8"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -36,5 +37,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
   "de.heikoseeberger" %% "akka-http-json4s" % akkaHttpJson,
   "ch.qos.logback" % "logback-classic" % logbackVersion % "runtime",
-  "com.github.t3hnar" %% "scala-bcrypt" % bcryptVersion
+  "com.github.t3hnar" %% "scala-bcrypt" % bcryptVersion,
+  "org.scalaz" %% "scalaz-core" % scalazVersion
 )

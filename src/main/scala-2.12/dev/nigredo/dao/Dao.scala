@@ -1,5 +1,6 @@
 package dev.nigredo.dao
 
+import dev.nigredo.domain.models.Email
 import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser}
 import dev.nigredo.projection.User
 import dev.nigredo.{system, _}
@@ -22,13 +23,15 @@ object Dao {
     private lazy val connection = Future.fromTry(parsedUri.map(driver.connection)).flatMap(_.database(dataSourceConfig.getString("mongo.db")))
     private lazy val userCollection = connection.map(_.collection("user"))
 
-    def queryUserDao = system.actorOf(DaoActor.props(list[User](userCollection), details[User](userCollection)))
+    def findUser = system.actorOf(DaoActor.props(list[User](userCollection), details[User](userCollection)))
 
     def createUser = create[NewUser](userCollection)(toNewDocument) _
 
     def updateUser = update[UpdatedUser](userCollection)(toUpdatedDocument) _
 
     def findUserById = findById[ExistingUser](userCollection) _
+
+    def isEmailExists(email: Email) = isExists[ExistingUser](userCollection)(emailFilter(email))
   }
 
 }

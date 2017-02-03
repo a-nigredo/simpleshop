@@ -9,10 +9,10 @@ import scala.concurrent.duration._
 
 object FrontController {
 
-  implicit val timeout = Timeout(15 seconds)
+  implicit val timeout = Timeout(5 seconds)
 
   val routes = pathPrefix("api" / "user") {
-    UserController.route(Dao.Mongo.queryUserDao) ~ controller.command.UserController.route(service.Service.userService)
+    UserController.route(Dao.Mongo.findUser) ~ controller.command.UserController.route(service.Service.userService)
   }
 
 }

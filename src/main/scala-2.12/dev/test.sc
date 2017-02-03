@@ -1,15 +1,15 @@
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import scalaz.EitherT
+import scalaz.Scalaz._
 
-val r = for {
-  _ <- Future {
-    println("Future 1")
-    Thread.sleep(8000)
-  }
-  _ <- Future {
-    println("Future 2")
-  }
-} yield ()
+val v1 = Future.successful(None \/> 3)
+val v2 = Future.successful(2.right[Int])
 
-Await.result(r, Duration.Inf)
+val result = (for {
+  r1 <- EitherT.eitherT(v1)
+  r2 <- EitherT.eitherT(v2)
+} yield r1 + r2).toOption
+
+println(Await.result(result.run, Duration.Inf))

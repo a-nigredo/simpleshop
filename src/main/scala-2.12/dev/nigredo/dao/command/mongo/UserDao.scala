@@ -40,4 +40,6 @@ private[dao] object UserDao {
       "modificationDate" -> user.modificationDate
     )
   )
+
+  def emailFilter(email: Email) = BSONDocument("email" -> email.value)
 }

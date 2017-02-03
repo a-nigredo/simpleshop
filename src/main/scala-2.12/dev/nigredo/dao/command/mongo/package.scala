@@ -18,4 +18,7 @@ package object mongo {
 
   private[dao] def findById[A](collection: Future[BSONCollection])(id: Id[String])(implicit reader: Reader[A]) =
     collection.flatMap(_.find(BSONDocument("id" -> id.value)).one[A])
+
+  private[dao] def isExists[A](collection: Future[BSONCollection])(filter: BSONDocument)(implicit reader: Reader[A]) =
+    collection.flatMap(_.find(filter).one[A]).map(_.isDefined)
 }
