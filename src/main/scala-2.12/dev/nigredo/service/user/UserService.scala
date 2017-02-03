@@ -17,18 +17,28 @@ private[service] object UserService {
             (validate: NewUser => Future[Result[NewUser]])
             (persist: NewUser => Future[NewUser]): Create = (dto: CreateUserDto) =>
     (for {
-      user <- EitherT.eitherT(validate(transform(dto)))
-      result <- EitherT.eitherT(persist(user).map(x => x.right))
+      user <- validate(transform(dto)).toEitherT
+      result <- persist(user).toRight.toEitherT
     } yield result).run
 
   def update(load: UserId => Future[Option[ExistingUser]])
             (transform: ExistingUser => UpdateUserDto => UpdatedUser)
             (validate: UpdatedUser => Future[Result[UpdatedUser]])
-            (persist: UpdatedUser => Future[UpdatedUser]): Update = (id: UserId) => (dto: UpdateUserDto) =>
+            (persist: UpdatedUser => Future[UpdatedUser]): Update = (id: UserId) => (dto: UpdateUserDto) => {
     OptionT(load(id)).flatMapF { user =>
       (for {
-        user <- EitherT.eitherT(validate(transform(user)(dto)))
-        result <- EitherT.eitherT(persist(user).map(x => x.right))
+        user <- validate(transform(user)(dto)).toEitherT
+        result <- persist(user).toRight.toEitherT
       } yield result).run
     }.getOrElse(ItemNotFound().left)
+  }
+
+  implicit class ToEitherT[A](value: Future[Result[A]]) {
+    def toEitherT = EitherT.eitherT(value)
+  }
+
+  implicit class Future2Right[A](value: Future[A]) {
+    def toRight = value.map(_.right)
+  }
+
 }
