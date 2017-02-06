@@ -15,9 +15,9 @@ object Service {
   type Create = CreateUserDto => Future[Result[NewUser]]
   type Update = UserId => UpdateUserDto => Future[Result[UpdatedUser]]
 
+  import com.github.t3hnar.bcrypt._
   import dev.nigredo._
   import dev.nigredo.dao.Dao.Mongo._
-  import com.github.t3hnar.bcrypt._
 
   private val onCreate =
     UserService.create(dto => User(Name(dto.name), Email(dto.email), models.Password(dto.password.bcrypt)))(UserValidator[NewUser](isEmailExists))(createUser)
