@@ -8,7 +8,7 @@ import scalaz.{-\/, \/-}
 
 package object service {
 
-  private[service] def createResponse[A, B <: ApplicationProtocol](response: Result[A], onSuccess: A => B) =
+  private[service] def respond[A, B <: ApplicationProtocol](response: Result[A], onSuccess: A => B) =
     response match {
       case -\/(err) => err match {
         case err@ValidationError(_) => InvalidData(err)

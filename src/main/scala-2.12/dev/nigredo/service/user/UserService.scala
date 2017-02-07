@@ -1,44 +1,23 @@
 package dev.nigredo.service.user
 
-import dev.nigredo.Error.ItemNotFound
-import dev.nigredo.Result
+import dev.nigredo.dao.Dao.Mongo.{createUser, findUserById, isEmailExists, updateUser}
+import dev.nigredo.domain.models
 import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser, UserId}
+import dev.nigredo.domain.models._
+import dev.nigredo.domain.validator.UserValidator
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
-import dev.nigredo.service.Service.{Create, Update}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scalaz.Scalaz._
-import scalaz.{EitherT, OptionT}
+import dev.nigredo.system
 
 private[service] object UserService {
 
-  def create(transform: CreateUserDto => NewUser)
-            (validate: NewUser => Future[Result[NewUser]])
-            (persist: NewUser => Future[NewUser]): Create = (dto: CreateUserDto) =>
-    (for {
-      user <- validate(transform(dto)).toEitherT
-      result <- persist(user).toRight.toEitherT
-    } yield result).run
+  import dev.nigredo.service.Service._
+  import com.github.t3hnar.bcrypt._
 
-  def update(load: UserId => Future[Option[ExistingUser]])
-            (transform: ExistingUser => UpdateUserDto => UpdatedUser)
-            (validate: UpdatedUser => Future[Result[UpdatedUser]])
-            (persist: UpdatedUser => Future[UpdatedUser]): Update = (id: UserId) => (dto: UpdateUserDto) => {
-    OptionT(load(id)).flatMapF { user =>
-      (for {
-        user <- validate(transform(user)(dto)).toEitherT
-        result <- persist(user).toRight.toEitherT
-      } yield result).run
-    }.getOrElse(ItemNotFound().left)
-  }
+  private[this] val onCreate =
+    create[CreateUserDto, NewUser](dto => User(Name(dto.name), Email(dto.email), models.Password(dto.password.bcrypt)))(UserValidator(isEmailExists))(createUser)
+  private[this] val onUpdate =
+    update[UserId, UpdateUserDto, ExistingUser, UpdatedUser](findUserById)((x: ExistingUser) => (dto: UpdateUserDto) =>
+      x.update((dto.name.map(Name), dto.email.map(Email), dto.password.map(x => models.Password(x.bcrypt)), dto.active.map(x => Activation(x)))))(UserValidator(isEmailExists))(updateUser)
 
-  implicit class ToEitherT[A](value: Future[Result[A]]) {
-    def toEitherT = EitherT.eitherT(value)
-  }
-
-  implicit class Future2Right[A](value: Future[A]) {
-    def toRight = value.map(_.right)
-  }
-
+  def apply() = system.actorOf(UserServiceActor.props(onCreate, onUpdate))
 }

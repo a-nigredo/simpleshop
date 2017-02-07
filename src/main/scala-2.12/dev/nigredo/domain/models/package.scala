@@ -6,8 +6,12 @@ package object models {
 
   trait New extends State
 
-  trait Existing[A, B] extends State {
-    def update(updateWith: B): A with Updated
+  trait Existing extends State {
+
+    type A
+    type B
+
+    def update(updateWith: A): B with Updated
   }
 
   trait Updated extends State

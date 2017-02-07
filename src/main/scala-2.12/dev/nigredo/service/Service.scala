@@ -1,29 +1,50 @@
 package dev.nigredo.service
 
+import dev.nigredo.Error.ItemNotFound
 import dev.nigredo.Result
-import dev.nigredo.domain.models
-import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser, UserId}
-import dev.nigredo.domain.models._
-import dev.nigredo.domain.validator.UserValidator
-import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
-import dev.nigredo.service.user.{UserService, UserServiceActor}
+import dev.nigredo.domain.models.{Persistent, _}
+import dev.nigredo.service.user.UserService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scalaz.Scalaz.{Id => _, _}
+import scalaz.{EitherT, OptionT}
 
 object Service {
 
-  type Create = CreateUserDto => Future[Result[NewUser]]
-  type Update = UserId => UpdateUserDto => Future[Result[UpdatedUser]]
+  type Create[A, B <: Persistent[String] with New] = A => Future[Result[B]]
+  type Update[A <: Id[String], B, C <: Persistent[String] with Updated] = A => B => Future[Result[C]]
 
-  import com.github.t3hnar.bcrypt._
+  def userService = UserService()
+
   import dev.nigredo._
-  import dev.nigredo.dao.Dao.Mongo._
 
-  private val onCreate =
-    UserService.create(dto => User(Name(dto.name), Email(dto.email), models.Password(dto.password.bcrypt)))(UserValidator[NewUser](isEmailExists))(createUser)
-  private val onUpdate =
-    UserService.update(findUserById)((x: ExistingUser) => (dto: UpdateUserDto) =>
-      x.update((dto.name.map(Name), dto.email.map(Email), dto.password.map(x => models.Password(x.bcrypt)), dto.active.map(x => Activation(x)))))(UserValidator[UpdatedUser](isEmailExists))(updateUser)
+  private[service] def create[A, N <: Persistent[String] with New](create: A => N)
+                                                                  (validate: N => Future[Result[N]])
+                                                                  (persist: N => Future[N]) = (from: A) =>
+    (for {
+      user <- validate(create(from)).toEitherT
+      result <- persist(user).toRight.toEitherT
+    } yield result).run
 
-  def userService = system.actorOf(UserServiceActor.props(onCreate, onUpdate))
+  private[service] def update[A <: Id[String], B, E <: Persistent[String] with Existing, U <: Persistent[String] with Updated](load: A => Future[Option[E]])
+                                                                                                                              (update: E => B => U)
+                                                                                                                              (validate: U => Future[Result[U]])
+                                                                                                                              (persist: U => Future[U]) =
+    (id: A) => (dto: B) =>
+      OptionT(load(id)).flatMapF { user =>
+        (for {
+          user <- validate(update(user)(dto)).toEitherT
+          result <- persist(user).toRight.toEitherT
+        } yield result).run
+      }.getOrElse(ItemNotFound().left)
+
+  implicit class ToEitherT[A](value: Future[Result[A]]) {
+    def toEitherT = EitherT.eitherT(value)
+  }
+
+  implicit class Future2Right[A](value: Future[A]) {
+    def toRight = value.map(_.right)
+  }
+
 }
