@@ -14,7 +14,7 @@ private[service] object UserService {
   import dev.nigredo.dao.Dao.Mongo.{createUser, findUserById, isEmailExists, updateUser}
 
   private[this] val onCreate =
-    create[CreateUserDto, NewUser](dto => User(Name(dto.name), Email(dto.email), models.Password(dto.password.bcrypt)))(UserValidator(isEmailExists))
+    create[CreateUserDto, NewUser](dto => User(Name(dto.name), Email(dto.email), models.Password(dto.password.bcrypt)))(UserValidator(isEmailExists))(createUser)
   private[this] val onUpdate =
     update[UserId, UpdateUserDto, ExistingUser, UpdatedUser](findUserById)((x: ExistingUser) => (dto: UpdateUserDto) =>
       x.update((dto.name.map(Name), dto.email.map(Email), dto.password.map(x => models.Password(x.bcrypt)), dto.active.map(x => Activation(x)))))(UserValidator(isEmailExists))(updateUser)
