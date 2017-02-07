@@ -1,6 +1,6 @@
 package dev.nigredo.dao
 
-import dev.nigredo.domain.models.Email
+import dev.nigredo.domain.models.{Email, Id}
 import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser}
 import dev.nigredo.projection.User
 import dev.nigredo.{system, _}
@@ -32,6 +32,8 @@ object Dao {
     def findUserById = findById[ExistingUser](userCollection) _
 
     def isEmailExists(email: Email) = isExists[ExistingUser](userCollection)(emailFilter(email))
+
+    def deleteUser = (id: Id[String]) => delete(userCollection)(idFilter(id))
   }
 
 }

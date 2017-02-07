@@ -9,7 +9,7 @@ import dev.nigredo.controller.Json
 import dev.nigredo.domain.models.Uuid
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
 import dev.nigredo.protocol.ApplicationProtocol.{InvalidData, ItemNotFound}
-import dev.nigredo.protocol.UserProtocol.Command.{CreateUser, Created, UpdateUser, Updated}
+import dev.nigredo.protocol.UserProtocol.Command._
 import org.json4s.DefaultFormats
 import org.json4s.native.Serialization
 import org.json4s.native.Serialization.write
@@ -27,11 +27,14 @@ object UserController {
         case Created(data) => Json.Ok(write(Id(data.value)))
         case InvalidData(errs) => Json.BadRequest(write(errs.msgs))
       }
-    } ~ (put & pathPrefix(Segment) & entity(as[UpdateUserDto]) & pathEnd) { (id, user) =>
-      onSuccess(actor ? UpdateUser(Uuid(id), user)) {
+    } ~ (put & pathPrefix(JavaUUID) & entity(as[UpdateUserDto]) & pathEnd) { (id, user) =>
+      onSuccess(actor ? UpdateUser(Uuid(id.toString), user)) {
         case Updated(data) => Json.Ok(write(Id(data.value)))
         case InvalidData(errs) => Json.BadRequest(write(errs.msgs))
         case ItemNotFound => Json.NotFound
       }
+    } ~ (delete & pathPrefix(JavaUUID) & pathEnd) { id =>
+      actor ! DeleteUser(Uuid(id.toString))
+      Json.Ok()
     }
 }

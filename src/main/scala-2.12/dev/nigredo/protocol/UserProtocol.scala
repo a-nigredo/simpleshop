@@ -32,6 +32,8 @@ object UserProtocol {
 
     case class Updated(id: UserId) extends UserProtocol
 
+    case class DeleteUser(id: UserId) extends UserProtocol
+
   }
 
 }

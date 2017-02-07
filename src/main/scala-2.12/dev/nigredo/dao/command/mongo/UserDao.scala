@@ -42,4 +42,6 @@ private[dao] object UserDao {
   )
 
   def emailFilter(email: Email) = BSONDocument("email" -> email.value)
+
+  def idFilter(id: Id[String]) = BSONDocument("id" -> id.value)
 }

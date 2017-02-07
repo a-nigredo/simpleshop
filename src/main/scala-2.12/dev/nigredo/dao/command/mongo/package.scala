@@ -21,4 +21,7 @@ package object mongo {
 
   private[dao] def isExists[A](collection: Future[BSONCollection])(filter: BSONDocument)(implicit reader: Reader[A]) =
     collection.flatMap(_.find(filter).one[A]).map(_.isDefined)
+
+  private[dao] def delete(collection: Future[BSONCollection])(filter: BSONDocument) =
+    collection.flatMap(_.remove(filter).map(_ => ()))
 }
