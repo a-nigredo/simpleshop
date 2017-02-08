@@ -29,12 +29,12 @@ object Service {
 
   private[service] def update[A <: Id[String], B, E <: Persistent[String] with Existing, U <: Persistent[String] with Updated](load: A => Future[Option[E]])
                                                                                                                               (update: E => B => U)
-                                                                                                                              (validate: U => Future[Result[U]])
+                                                                                                                              (validate: E => U => Future[Result[U]])
                                                                                                                               (persist: U => Future[U]) =
     (id: A) => (dto: B) =>
       OptionT(load(id)).flatMapF { user =>
         (for {
-          user <- validate(update(user)(dto)).toEitherT
+          user <- validate(user)(update(user)(dto)).toEitherT
           result <- persist(user).toRight.toEitherT
         } yield result).run
       }.getOrElse(ItemNotFound().left)
