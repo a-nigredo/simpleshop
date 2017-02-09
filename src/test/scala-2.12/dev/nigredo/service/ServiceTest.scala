@@ -33,15 +33,15 @@ class ServiceTest extends FunSuite with ScalaFutures with Matchers {
   }
 
   test("try update non existing entity") {
-    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => None.fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ItemNotFound())
+    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Option.empty.fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ItemNotFound())
   }
 
   test("update existing user with invalid data") {
-    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Some(existing).fs)(_ => _ => updated)(_ => _ => error)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ValidationError(Nil))
+    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Option(existing).fs)(_ => _ => updated)(_ => _ => error)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ValidationError(Nil))
   }
 
   test("update existing user with valid data") {
-    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Some(existing).fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual updated)
+    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Option(existing).fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual updated)
   }
 
   case class Dto(value: String)

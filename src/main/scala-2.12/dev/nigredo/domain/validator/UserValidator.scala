@@ -29,13 +29,13 @@ object UpdatedUserConstraint {
 private[this] object UserValidator {
 
   def validateName(user: User) =
-    (if ("""^([\w]{2,})+$""".r.findFirstMatchIn(user.name.value).isEmpty) Some("Name has to be more then 2 symbols and consist of letters and numbers") else None).fs
+    (if ("""^([\w]{2,})+$""".r.findFirstMatchIn(user.name.value).isEmpty) Option("Name has to be more then 2 symbols and consist of letters and numbers") else Option.empty).fs
 
   def validateEmail(user: User) = {
     val emailRegex = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
-    (if (emailRegex.findFirstMatchIn(user.email.value).isEmpty) Some("Incorrect email format") else None).fs
+    (if (emailRegex.findFirstMatchIn(user.email.value).isEmpty) Option("Incorrect email format") else Option.empty).fs
   }
 
   def validateEmailDuplication(isEmailExists: Email => Future[Boolean])(user: User) =
-    isEmailExists(user.email).map(x => if (x) Some("Email already exists") else None)
+    isEmailExists(user.email).map(x => if (x) Option("Email already exists") else Option.empty)
 }

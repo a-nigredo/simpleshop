@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.12.1"
 
-mainClass in assembly := Some("dev.nigredo.Application")
+mainClass in assembly := Option("dev.nigredo.Application")
 
 assemblyJarName in assembly := "shop.jar"
 

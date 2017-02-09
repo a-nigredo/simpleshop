@@ -15,7 +15,7 @@ object User {
   type UserId = Id[String]
 
   def apply(name: Name, email: Email, password: Password, activation: Activation = Disable) =
-    new User(Uuid(), name, email, password, activation, new Date(), None) with New
+    new User(Uuid(), name, email, password, activation, new Date(), Option.empty) with New
 
   def existing(id: Id[String], name: Name, email: Email, password: Password, active: Activation,
                creationDate: Date, modificationDate: Option[Date]) =
@@ -30,7 +30,7 @@ object User {
     override def update(updateWith: A) = {
       val (name, email, password, activation) = updateWith
       new User(this.id, name.getOrElse(this.name), email.getOrElse(this.email), password.getOrElse(this.password),
-        activation.getOrElse(this.active), this.creationDate, Some(new Date())) with Updated
+        activation.getOrElse(this.active), this.creationDate, Option(new Date())) with Updated
     }
   }
 
