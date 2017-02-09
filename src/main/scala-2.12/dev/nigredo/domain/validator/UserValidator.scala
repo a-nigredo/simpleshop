@@ -7,13 +7,17 @@ import dev.nigredo.domain.models.{Email, User}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object NewUserValidator extends UserValidator {
+object NewUserConstraint {
+
+  import UserValidator._
 
   def apply(emailChecker: Email => Future[Boolean])(user: NewUser) =
     validate[NewUser](List(validateName _, validateEmail _, validateEmailDuplication(emailChecker) _))(user)
 }
 
-object UpdatedUserValidator extends UserValidator {
+object UpdatedUserConstraint {
+
+  import UserValidator._
 
   def apply(emailChecker: Email => Future[Boolean])(oldState: ExistingUser)(newState: UpdatedUser) = {
     val validators = if (oldState.email == newState.email) List(validateName _)
@@ -22,16 +26,16 @@ object UpdatedUserValidator extends UserValidator {
   }
 }
 
-trait UserValidator {
+private[this] object UserValidator {
 
-  protected def validateName(user: User) =
+  def validateName(user: User) =
     (if ("""^([\w]{2,})+$""".r.findFirstMatchIn(user.name.value).isEmpty) Some("Name has to be more then 2 symbols and consist of letters and numbers") else None).fs
 
-  protected def validateEmail(user: User) = {
+  def validateEmail(user: User) = {
     val emailRegex = """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$""".r
     (if (emailRegex.findFirstMatchIn(user.email.value).isEmpty) Some("Incorrect email format") else None).fs
   }
 
-  protected def validateEmailDuplication(isEmailExists: Email => Future[Boolean])(user: User) =
+  def validateEmailDuplication(isEmailExists: Email => Future[Boolean])(user: User) =
     isEmailExists(user.email).map(x => if (x) Some("Email already exists") else None)
 }
