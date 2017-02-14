@@ -38,6 +38,4 @@ object User {
 
 case class Email(value: String) extends AnyVal
 
-case class Password(value: String) extends AnyVal
-
 case class Name(value: String) extends AnyVal

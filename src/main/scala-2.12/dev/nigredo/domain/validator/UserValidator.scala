@@ -11,7 +11,7 @@ object NewUserConstraint {
 
   import UserValidator._
 
-  def apply(emailChecker: Email => Future[Boolean])(user: NewUser) =
+  def apply(emailChecker: EmailChecker)(user: NewUser) =
     validate[NewUser](List(validateName _, validateEmail _, validateEmailDuplication(emailChecker) _))(user)
 }
 
@@ -19,14 +19,16 @@ object UpdatedUserConstraint {
 
   import UserValidator._
 
-  def apply(emailChecker: Email => Future[Boolean])(oldState: ExistingUser)(newState: UpdatedUser) = {
+  def apply(emailChecker: EmailChecker)(oldState: ExistingUser)(newState: UpdatedUser) = {
     val validators = if (oldState.email == newState.email) List(validateName _)
     else List(validateName _, validateEmail _, validateEmailDuplication(emailChecker) _)
     validate[UpdatedUser](validators)(newState)
   }
 }
 
-private[this] object UserValidator {
+object UserValidator {
+
+  type EmailChecker = Email => Future[Boolean]
 
   def validateName(user: User) =
     (if ("""^([\w]{2,})+$""".r.findFirstMatchIn(user.name.value).isEmpty) Option("Name has to be more then 2 symbols and consist of letters and numbers") else Option.empty).fs
@@ -36,6 +38,6 @@ private[this] object UserValidator {
     (if (emailRegex.findFirstMatchIn(user.email.value).isEmpty) Option("Incorrect email format") else Option.empty).fs
   }
 
-  def validateEmailDuplication(isEmailExists: Email => Future[Boolean])(user: User) =
+  def validateEmailDuplication(isEmailExists: EmailChecker)(user: User) =
     isEmailExists(user.email).map(x => if (x) Option("Email already exists") else Option.empty)
 }

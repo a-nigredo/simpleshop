@@ -2,7 +2,7 @@ package dev.nigredo.dao.query.mongo
 
 import akka.actor.{Actor, Props}
 import akka.pattern.pipe
-import dev.nigredo.dao.query.{Item, Items}
+import dev.nigredo.dao.query.Types._
 import dev.nigredo.domain.models.Uuid
 import dev.nigredo.projection.User
 import dev.nigredo.protocol.UserProtocol.Query.{UserDetailsRequest, UserDetailsResponse, UserListRequest, UserListResponse}

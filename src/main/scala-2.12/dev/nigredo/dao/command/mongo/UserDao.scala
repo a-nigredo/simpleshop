@@ -14,7 +14,7 @@ private[dao] object UserDao {
       models.User.existing(doc.getAs[BSONString]("id").map(x => Uuid(x.value)).get,
         doc.getAs[BSONString]("name").map(x => Name(x.value)).get,
         doc.getAs[BSONString]("email").map(x => Email(x.value)).get,
-        doc.getAs[BSONString]("password").map(x => Password(x.value)).get,
+        doc.getAs[BSONString]("password").map(x => Password.bcrypted(x.value)).get,
         doc.getAs[BSONInteger]("active").map(x => Activation(x.value)).get,
         doc.getAs[BSONDateTime]("creationDate").map(x => new Date(x.value)).get,
         doc.getAs[BSONDateTime]("modificationDate").map(x => new Date(x.value)))

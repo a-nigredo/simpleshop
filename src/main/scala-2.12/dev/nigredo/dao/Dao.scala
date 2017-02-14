@@ -25,7 +25,7 @@ object Dao {
 
     def findUser = system.actorOf(DaoActor.props(list[User](userCollection), details[User](userCollection)))
 
-    def createUser = create[NewUser](userCollection)(toNewDocument) _
+    def saveUser = create[NewUser](userCollection)(toNewDocument) _
 
     def updateUser = update[UpdatedUser](userCollection)(toUpdatedDocument) _
 

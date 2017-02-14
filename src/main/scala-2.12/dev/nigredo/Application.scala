@@ -10,7 +10,7 @@ import scala.util.Failure
 
 object Application extends App {
 
-  val logger = Logger(LoggerFactory.getLogger(this.getClass))
+  val logger = Logger(LoggerFactory.getLogger(this.getClass.getSimpleName))
   val host = serverConfig.getString("host")
   val port = serverConfig.getInt("port")
 

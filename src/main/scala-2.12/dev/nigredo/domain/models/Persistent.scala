@@ -13,6 +13,5 @@ trait Id[A] {
 case class Uuid(value: String) extends Id[String]
 
 object Uuid {
-
   def apply() = new Uuid(UUID.randomUUID().toString)
 }
