@@ -3,9 +3,10 @@ package dev.nigredo.domain.models
 import java.util.Date
 
 import dev.nigredo.domain.models
+import dev.nigredo.domain.models.User.UserId
 
-case class User private(id: Id[String], name: Name, email: Email, password: Password, active: Activation,
-                        creationDate: Date, modificationDate: Option[Date]) extends Persistent[String]
+case class User private(id: UserId, name: Name, email: Email, password: Password, active: Activation,
+                        creationDate: Date, modificationDate: Option[Date]) extends Persistent[UserId]
 
 object User {
 

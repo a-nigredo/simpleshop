@@ -1,9 +1,9 @@
 package dev.nigredo.service
 
-import dev.nigredo.Error.{ItemNotFound, ValidationError}
+import dev.nigredo.{ItemNotFound, ValidationError}
 import dev.nigredo._
 import dev.nigredo.domain.models._
-import dev.nigredo.service.Service._
+import dev.nigredo.service.Flow._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{FunSuite, Matchers}
@@ -33,7 +33,7 @@ class ServiceTest extends FunSuite with ScalaFutures with Matchers {
   }
 
   test("try update non existing entity") {
-    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Option.empty.fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ItemNotFound())
+    update[StrId, Dto, ExistingEntity, UpdateEntity](_ => Option.empty.fs)(_ => _ => updated)(_ => _ => \/-(updated).fs)(_ => successOnUpdate)(id)(dto).futureValue.map(_ shouldEqual ItemNotFound)
   }
 
   test("update existing user with invalid data") {
@@ -48,15 +48,15 @@ class ServiceTest extends FunSuite with ScalaFutures with Matchers {
 
   case class StrId(value: String = "1") extends Id[String]
 
-  case class NewEntity(id: StrId) extends Persistent[String] with New
+  case class NewEntity(id: StrId) extends Persistent[Id[String]] with New
 
-  case class ExistingEntity(id: StrId) extends Persistent[String] with Existing {
+  case class ExistingEntity(id: StrId) extends Persistent[Id[String]] with Existing {
     override type A = StrId
     override type B = UpdateEntity
 
     override def update(updateWith: StrId): UpdateEntity with Updated = UpdateEntity(updateWith)
   }
 
-  case class UpdateEntity(id: StrId) extends Persistent[String] with Updated
+  case class UpdateEntity(id: StrId) extends Persistent[Id[String]] with Updated
 
 }

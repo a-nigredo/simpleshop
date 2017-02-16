@@ -12,7 +12,7 @@ import scalaz.{Functor, \/}
 
 package object nigredo {
 
-  type Result[A] = \/[Error.Error, A]
+  type Result[A] = \/[Error, A]
 
   implicit val system = ActorSystem("recruiting-system")
   implicit val materializer = ActorMaterializer()

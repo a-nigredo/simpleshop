@@ -4,7 +4,6 @@ import dev.nigredo.dao.query.Pagination
 import dev.nigredo.domain.models.User.UserId
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
 import dev.nigredo.projection.User
-import dev.nigredo.protocol.ApplicationProtocol.ApplicationProtocol
 
 object UserProtocol {
 

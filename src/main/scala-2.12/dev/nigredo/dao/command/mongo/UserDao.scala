@@ -14,7 +14,7 @@ private[dao] object UserDao {
       models.User.existing(doc.getAs[BSONString]("id").map(x => Uuid(x.value)).get,
         doc.getAs[BSONString]("name").map(x => Name(x.value)).get,
         doc.getAs[BSONString]("email").map(x => Email(x.value)).get,
-        doc.getAs[BSONString]("password").map(x => Password.bcrypted(x.value)).get,
+        doc.getAs[BSONDocument]("password").map(x => Password.bcrypted(x.getAs[BSONString]("value").get.value, Salt(x.getAs[BSONString]("salt").get.value))).get,
         doc.getAs[BSONInteger]("active").map(x => Activation(x.value)).get,
         doc.getAs[BSONDateTime]("creationDate").map(x => new Date(x.value)).get,
         doc.getAs[BSONDateTime]("modificationDate").map(x => new Date(x.value)))
@@ -24,7 +24,7 @@ private[dao] object UserDao {
     "id" -> user.id.value,
     "name" -> user.name.value,
     "email" -> user.email.value,
-    "password" -> user.password.value,
+    "password" -> BSONDocument("value" -> user.password.value, "salt" -> user.password.salt.value),
     "active" -> user.active.value,
     "creationDate" -> user.creationDate,
     "modificationDate" -> user.modificationDate
@@ -33,7 +33,7 @@ private[dao] object UserDao {
   def toUpdatedDocument(user: UpdatedUser) = BSONDocument("$set" ->
     BSONDocument(
       "name" -> user.name.value,
-      "password" -> user.password.value,
+      "password" -> BSONDocument("value" -> user.password.value, "salt" -> user.password.salt.value),
       "email" -> user.email.value,
       "active" -> user.active.value,
       "creationDate" -> user.creationDate,
@@ -42,6 +42,8 @@ private[dao] object UserDao {
   )
 
   def emailFilter(email: Email) = BSONDocument("email" -> email.value)
+
+  def activateFilter(active: Activation = Enable) = BSONDocument("active" -> active.value)
 
   def idFilter(id: Id[String]) = BSONDocument("id" -> id.value)
 }

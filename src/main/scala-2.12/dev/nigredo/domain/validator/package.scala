@@ -1,6 +1,6 @@
 package dev.nigredo.domain
 
-import dev.nigredo.Error.ValidationError
+import dev.nigredo.ValidationError
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
