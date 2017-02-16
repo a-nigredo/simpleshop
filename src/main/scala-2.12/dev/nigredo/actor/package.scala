@@ -1,5 +1,6 @@
 package dev.nigredo
 
+import dev.nigredo.Types.Result
 import dev.nigredo.protocol.ApplicationProtocol
 
 import scalaz.{-\/, \/-}

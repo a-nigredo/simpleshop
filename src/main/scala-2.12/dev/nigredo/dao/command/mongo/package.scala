@@ -13,7 +13,10 @@ package object mongo {
   private[dao] def create[A <: New](collection: Future[BSONCollection])(document: A => BSONDocument)(entity: A) =
     collection.flatMap(_.insert(document(entity)).map(_ => entity))
 
-  private[dao] def update[A <: Persistent[B] with Updated, B](collection: Future[BSONCollection])(modifier: A => BSONDocument)(id: A => BSONDocument)(entity: A) =
+  private[dao] def update[A <: Persistent[B] with Updated, B](collection: Future[BSONCollection])
+                                                             (modifier: A => BSONDocument)
+                                                             (id: A => BSONDocument)
+                                                             (entity: A) =
     collection.flatMap(_.update(id(entity), modifier(entity)).map(_ => entity))
 
   private[dao] def findOneByFilter[A](collection: Future[BSONCollection])(filter: BSONDocument)(implicit reader: Reader[A]) =

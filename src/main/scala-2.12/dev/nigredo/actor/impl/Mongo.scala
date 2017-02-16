@@ -10,5 +10,5 @@ object Mongo {
 
   def user = system.actorOf(UserActor.props(createUser, saveUser, deleteUser))
 
-  def security = system.actorOf(SecurityActor.props(createToken, updateToken))
+  def security = system.actorOf(SecurityActor.props(login, prolongToken() _))
 }

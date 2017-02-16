@@ -19,9 +19,9 @@ case class AccessToken private(value: String, expireDate: ExpireDate, user: User
 
 object AccessToken {
 
-  type NewAccessToken = AccessToken with New
-  type ExistingAccessToken = AccessToken with Existing
-  type UpdatedAccessToken = AccessToken with Updated
+  type NewToken = AccessToken with New
+  type ExistingToken = AccessToken with Existing
+  type UpdatedToken = AccessToken with Updated
   type TokenId = String
 
   def apply(user: UserId, durationLifeTime: Duration = Duration(config.getString("security.tokenLifeTime"))) = {

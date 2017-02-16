@@ -1,7 +1,7 @@
 package dev.nigredo.dao.impl
 
 import dev.nigredo.dao.command
-import dev.nigredo.domain.models.AccessToken.{ExistingAccessToken, NewAccessToken, TokenId, UpdatedAccessToken}
+import dev.nigredo.domain.models.AccessToken.{ExistingToken, NewToken, TokenId, UpdatedToken}
 import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser, UserId}
 import dev.nigredo.domain.models.{Email, Id}
 import dev.nigredo.projection.User
@@ -27,11 +27,11 @@ object Mongo {
 
   def removeToken(value: String) = delete(tokenCollection)(valueFilter(value))
 
-  def addToken = create[NewAccessToken](tokenCollection)(AccessTokenDao.toNewDocument) _
+  def addToken = create[NewToken](tokenCollection)(AccessTokenDao.toNewDocument) _
 
-  def saveToken = update[UpdatedAccessToken, TokenId](tokenCollection)(AccessTokenDao.toUpdateDocument)(x => valueFilter(x.value)) _
+  def saveToken = update[UpdatedToken, TokenId](tokenCollection)(AccessTokenDao.toUpdateDocument)(x => valueFilter(x.value)) _
 
-  def findTokenByValue(value: String) = findOneByFilter[ExistingAccessToken](tokenCollection)(valueFilter(value))
+  def findTokenByValue(value: String) = findOneByFilter[ExistingToken](tokenCollection)(valueFilter(value))
 
   def findUser = system.actorOf(DaoActor.props(list[User](userCollection), details[User](userCollection)))
 
