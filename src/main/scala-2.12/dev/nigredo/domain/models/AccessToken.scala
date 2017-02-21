@@ -36,7 +36,7 @@ object AccessToken {
   sealed trait Existing extends models.Existing {
     this: AccessToken =>
 
-    override type A = ExpireDate
+    override type A = ExpireDate with New
     override type B = AccessToken
 
     override def update(updateWith: A) = new AccessToken(this.value, updateWith, this.user) with Updated
@@ -44,11 +44,14 @@ object AccessToken {
 
 }
 
-case class ExpireDate(value: Long) extends AnyVal
+case class ExpireDate(value: Long)
 
 object ExpireDate {
+
+  type NewExpireDate = ExpireDate with New
+
   def apply(durationLifeTime: Duration = Duration(config.getString("security.tokenLifeTime"))) =
-    new ExpireDate(Instant.now().plusMillis(durationLifeTime.toMillis).toEpochMilli)
+    new ExpireDate(Instant.now().plusMillis(durationLifeTime.toMillis).toEpochMilli) with New
 }
 
 case class Credentials(email: Email, password: String)

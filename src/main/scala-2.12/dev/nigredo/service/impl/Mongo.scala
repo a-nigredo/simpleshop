@@ -1,7 +1,8 @@
 package dev.nigredo.service.impl
 
+import dev.nigredo.domain.models.ExpireDate.NewExpireDate
 import dev.nigredo.domain.models.User.{ExistingUser, NewUser, UpdatedUser, UserId}
-import dev.nigredo.domain.models.{Credentials, ExpireDate}
+import dev.nigredo.domain.models.{Credentials, ExpireDate, New}
 import dev.nigredo.domain.validator.{NewUserConstraint, UpdatedUserConstraint}
 import dev.nigredo.dto.User
 import dev.nigredo.dto.User.{CreateUserDto, UpdateUserDto}
@@ -18,6 +19,6 @@ object Mongo {
   def login(credentials: Credentials) =
     dev.nigredo.service.SecurityService.login(credentials)(findActiveUserByEmail)(addToken)
 
-  def prolongToken(expireDate: => ExpireDate = ExpireDate())(value: String) =
+  def prolongToken(expireDate: => NewExpireDate = ExpireDate())(value: String) =
     dev.nigredo.service.SecurityService.prolongToken(value)(expireDate)(findTokenByValue)(removeToken)(saveToken)
 }

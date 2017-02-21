@@ -2,6 +2,7 @@ package dev.nigredo.service
 
 import dev.nigredo.AuthenticationError
 import dev.nigredo.domain.models.AccessToken.{ExistingToken, NewToken, TokenId, UpdatedToken}
+import dev.nigredo.domain.models.ExpireDate.NewExpireDate
 import dev.nigredo.domain.models.User.ExistingUser
 import dev.nigredo.domain.models._
 
@@ -22,7 +23,7 @@ object SecurityService {
     }.getOrElse(-\/(AuthenticationError))
 
   def prolongToken(tokenValue: TokenId)
-                  (expireDate: => ExpireDate)
+                  (expireDate: => NewExpireDate)
                   (findToken: TokenId => Future[Option[ExistingToken]])
                   (onExpire: TokenId => Future[Unit])
                   (onUpdate: UpdatedToken => Future[UpdatedToken]) =
