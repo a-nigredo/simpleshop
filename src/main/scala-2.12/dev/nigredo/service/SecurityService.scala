@@ -14,10 +14,11 @@ import scalaz.{-\/, OptionT, \/-}
 object SecurityService {
 
   def login(credentials: Credentials)
+           (crypt: (String, Salt) => Password = Password.bcrypt)
            (findUser: Email => Future[Option[ExistingUser]])
            (onSuccess: NewToken => Future[NewToken]) =
     OptionT(findUser(credentials.email)).flatMapF { user =>
-      if (user.password.value == Password.bcrypt(credentials.password, user.password.salt).value)
+      if (user.password.value == crypt(credentials.password, user.password.salt).value)
         onSuccess(AccessToken(user.id)).map(x => \/-(x))
       else -\/(AuthenticationError).fs
     }.getOrElse(-\/(AuthenticationError))

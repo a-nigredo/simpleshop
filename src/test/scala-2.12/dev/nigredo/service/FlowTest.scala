@@ -11,7 +11,7 @@ import org.scalatest.{FunSuite, Matchers}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scalaz.{-\/, \/-}
 
-class ServiceTest extends FunSuite with ScalaFutures with Matchers {
+class FlowTest extends FunSuite with ScalaFutures with Matchers {
 
   implicit val defaultPatience = PatienceConfig(Span(1, Seconds), Span(15, Millis))
 

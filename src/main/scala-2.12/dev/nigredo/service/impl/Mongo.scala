@@ -17,7 +17,7 @@ object Mongo {
   def saveUser = update[UserId, UpdateUserDto, ExistingUser, UpdatedUser](findUserById)(User.map)(UpdatedUserConstraint(isEmailExists))(updateUser)
 
   def login(credentials: Credentials) =
-    dev.nigredo.service.SecurityService.login(credentials)(findActiveUserByEmail)(addToken)
+    dev.nigredo.service.SecurityService.login(credentials)()(findActiveUserByEmail)(addToken)
 
   def prolongToken(expireDate: => NewExpireDate = ExpireDate())(value: String) =
     dev.nigredo.service.SecurityService.prolongToken(value)(expireDate)(findTokenByValue)(removeToken)(saveToken)
