@@ -11,7 +11,7 @@ import dev.nigredo.domain.models.User.UserId
 
 import scala.concurrent.duration.Duration
 
-case class AccessToken private(value: String, expireDate: ExpireDate, user: UserId) extends Persistent[TokenId] {
+abstract case class AccessToken(value: String, expireDate: ExpireDate, user: UserId) extends Persistent[TokenId] {
   def isExpired = Instant.now().toEpochMilli > expireDate.value
 
   override val id = value
@@ -31,7 +31,7 @@ object AccessToken {
     new AccessToken(md5Hash(UUID.randomUUID().toString), ExpireDate(durationLifeTime), user) with New
   }
 
-  def existing(value: String, expireDate: ExpireDate, user: UserId) = new AccessToken(value, expireDate, user) with Existing
+  def apply(value: String, expireDate: ExpireDate, user: UserId) = new AccessToken(value, expireDate, user) with Existing
 
   sealed trait Existing extends models.Existing {
     this: AccessToken =>

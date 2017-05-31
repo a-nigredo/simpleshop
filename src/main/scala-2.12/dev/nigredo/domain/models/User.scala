@@ -5,8 +5,8 @@ import java.util.Date
 import dev.nigredo.domain.models
 import dev.nigredo.domain.models.User.UserId
 
-case class User private(id: UserId, name: Name, email: Email, password: Password, active: Activation,
-                        creationDate: Date, modificationDate: Option[Date]) extends Persistent[UserId]
+abstract case class User(id: UserId, name: Name, email: Email, password: Password, active: Activation,
+                         creationDate: Date, modificationDate: Option[Date]) extends Persistent[UserId]
 
 object User {
 
@@ -18,8 +18,8 @@ object User {
   def apply(name: Name, email: Email, password: Password, activation: Activation = Disable) =
     new User(Uuid(), name, email, password, activation, new Date(), Option.empty) with New
 
-  def existing(id: Id[String], name: Name, email: Email, password: Password, active: Activation,
-               creationDate: Date, modificationDate: Option[Date]) =
+  def apply(id: Id[String], name: Name, email: Email, password: Password, active: Activation,
+            creationDate: Date, modificationDate: Option[Date]) =
     new User(id, name, email, password, active, creationDate, modificationDate) with Existing
 
   sealed trait Existing extends models.Existing {

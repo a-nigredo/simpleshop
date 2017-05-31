@@ -31,7 +31,7 @@ class UserTest extends FunSuite with Matchers {
     val creationDate = new Date()
     val modificationDate = Option(new Date())
 
-    val user = User.existing(id, Name("name"), Email("test@test.com"), password, Enable, creationDate, modificationDate)
+    val user = User(id, Name("name"), Email("test@test.com"), password, Enable, creationDate, modificationDate)
 
     user.id.value should be(id.value)
     user.name.value should be("name")
@@ -46,7 +46,7 @@ class UserTest extends FunSuite with Matchers {
     val id = Uuid()
     val creationDate = new Date()
     val newPassword = Password.bcrypt("newPassword")
-    val user = User.existing(id, Name("name"), Email("test@test.com"), password, Enable, creationDate, None)
+    val user = User(id, Name("name"), Email("test@test.com"), password, Enable, creationDate, None)
 
     val actual = user.update((Option(Name("newName")), Option(Email("newEmail@test.com")), Option(newPassword), Option(Disable)))
 

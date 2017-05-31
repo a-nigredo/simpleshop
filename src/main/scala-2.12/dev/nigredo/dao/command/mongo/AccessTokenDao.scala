@@ -8,7 +8,7 @@ private[dao] object AccessTokenDao {
 
   implicit object AccessTokenReader extends BSONDocumentReader[ExistingToken] {
     override def read(doc: BSONDocument): ExistingToken =
-      AccessToken.existing(doc.getAs[BSONString]("value").map(_.value).get,
+      AccessToken(doc.getAs[BSONString]("value").map(_.value).get,
         doc.getAs[BSONLong]("expireDate").map(x => ExpireDate(x.value)).get,
         doc.getAs[BSONString]("user").map(x => Uuid(x.value)).get)
   }
